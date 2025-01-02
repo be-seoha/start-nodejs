@@ -3,7 +3,7 @@ var fs = require('fs');
 var url = require('url');
 var qs = require('querystring');
 
-function templateHTML(title, list, body) {
+function templateHTML(title, list, body, control) {
     return `
             <!doctype html>
             <html>
@@ -14,7 +14,7 @@ function templateHTML(title, list, body) {
             <body>
             <h1><a href="/">WEB</a></h1>
             <ul>${list}</ul>
-                <a href="/create">create</a>
+                ${control}    
                 ${body}
             </body>
             </html>
@@ -45,7 +45,10 @@ var app = http.createServer(function (request, response) {
                 var title = 'Welcome';
                 var description = 'Hello Node.js';
                 var list = templateList(filelist);
-                var template = templateHTML(title, list, `<h2>${title}</h2>${description}`);
+                var template = templateHTML(title, list
+                    , `<h2>${title}</h2>${description}`
+                    , `<a href="/create">create</a>`
+              );
 
                 response.writeHead(200);
                 response.end(template);
@@ -56,7 +59,9 @@ var app = http.createServer(function (request, response) {
                 fs.readFile(`data/${queryData.id}`, 'utf8', function (err, description) {
                     var title = queryData.id;
                     var list = templateList(filelist);
-                    var template = templateHTML(title, list, `<h2>${title}</h2>${description}`);
+                    var template = templateHTML(title, list
+                        , `<h2>${title}</h2>${description}`
+                        , `<a href="/create">create</a>  <a href="/update?id=${title}">update</a>`);
 
                     response.writeHead(200);
                     response.end(template);
@@ -79,7 +84,8 @@ var app = http.createServer(function (request, response) {
                         <input type="submit">
                     </p>
                 </form>
-                `);
+                `
+                ,   '');
             response.writeHead(200);
             response.end(template);
         });
